@@ -5,6 +5,7 @@
 fstream count_file;
 fstream rank_file;
 string index_dir;
+unsigned int count_array[ALPHABET_SIZE];
 
 s::s(string filename){
 
@@ -17,13 +18,15 @@ s::s(string filename){
 	if(!find_or_create_file(count_file_name)){
 		create_count_file(FILE_DIR + filename + ".s", count_file_name);
 	}
+
+	ifstream count_file;
+	count_file.open(count_file_name);
 	
 }
 
 unsigned int s::count(char c, unsigned int index){
 
 	unsigned int total;
-
 	return total;
 }
 

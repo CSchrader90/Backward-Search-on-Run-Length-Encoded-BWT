@@ -1,12 +1,12 @@
 #include <fstream>
 #include <string>
+#include "indexes.h"
 
 #define INDEX_DIR "./../indexes/"
 #define FILE_DIR "./../files/"
-#define ALPHABET_SIZE 256
 
 using namespace std;
-class s {
+class s : public indexes {
 	fstream count_file;
 	fstream rank_file;
 	string index_dir = INDEX_DIR;

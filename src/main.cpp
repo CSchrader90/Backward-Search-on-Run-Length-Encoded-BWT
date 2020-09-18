@@ -12,6 +12,8 @@ int main(int argc, char *argv[]){
 
 	string text_name(argv[1]);
 
-	s { text_name };
+	s s_obj{ text_name };
+
+	cout << s_obj.rank('p', 5) << endl;
 
 }

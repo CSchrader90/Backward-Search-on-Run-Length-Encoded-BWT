@@ -3,7 +3,7 @@
 #include "indexes.h"
 
 
-void indexes::ArrayToFile(vector<unsigned long int> index_entry, fstream& out_file){
+void indexes::VectorToFile(vector<unsigned long int> index_entry, fstream& out_file){
 
 	for (auto val : index_entry) {
         out_file.write(reinterpret_cast<const char *>(&val), sizeof(unsigned long int));
@@ -11,7 +11,7 @@ void indexes::ArrayToFile(vector<unsigned long int> index_entry, fstream& out_fi
 
 }
 
-vector<unsigned long int> indexes::FileToArray(fstream& in_file, unsigned long int offset){
+vector<unsigned long int> indexes::FileToVector(fstream& in_file, unsigned long int offset){
 
 	unsigned long int in;
 	in_file.seekg(offset, in_file.beg);

@@ -7,6 +7,6 @@ using namespace std;
 
 class indexes {
 public:
-	void ArrayToFile(vector<unsigned long int> index_entry, fstream& out_file);
-	vector<unsigned long int> FileToArray(fstream& in_file, unsigned long int offset);
+	void VectorToFile(vector<unsigned long int> index_entry, fstream& out_file);
+	vector<unsigned long int> FileToVector(fstream& in_file, unsigned long int offset);
 };

@@ -2,84 +2,122 @@
 #include <iostream>
 #include "s.h"
 
+fstream s_file;
 fstream count_file;
 fstream rank_file;
 string index_dir;
-unsigned int count_array[ALPHABET_SIZE];
+vector<unsigned long int>count_vector;
 
 s::s(string filename){
 
 	string rank_file_name = index_dir + filename + ".rank";
 	string count_file_name = index_dir + filename + ".count";
+	string s_file_name = FILE_DIR + filename + ".s";
+
+	s_file.open(s_file_name, fstream::in);
 
 	if(!find_or_create_file(rank_file_name)){
-		create_rank_file(FILE_DIR + filename + ".s", rank_file_name);
+		fill_rank_file(s_file, rank_file_name);
 	}
 	if(!find_or_create_file(count_file_name)){
-		create_count_file(FILE_DIR + filename + ".s", count_file_name);
+		fill_count_file(s_file, count_file_name);
 	}
 
-	ifstream count_file;
-	count_file.open(count_file_name);
-	
+	count_file.open(count_file_name, fstream::in);
+	count_vector = FileToVector(count_file, 0);
+
+	rank_file.open(rank_file_name, fstream::in);
+
+
 }
 
-unsigned int s::count(char c, unsigned int index){
+unsigned long int s::count(char c){
+	return count_vector[c];
+}
 
-	unsigned int total;
+unsigned long int s::rank(char c, unsigned int index) {
+
+	unsigned long int index_offset = index/RANK_SAVE_INTERVAL;
+	vector<unsigned long int> index_vec;
+	index_vec = FileToVector(rank_file, index_offset*ALPHABET_SIZE*sizeof(unsigned long int));
+	unsigned long int total = index_vec[c];
+
+	unsigned long int cur_read = index - index%RANK_SAVE_INTERVAL + 1; 
+	char in_char;
+	s_file.seekg(cur_read, s_file.beg);
+
+	while(cur_read <= index){
+
+		s_file.get(in_char);
+		if(in_char == c)
+			total++;
+		cur_read++;
+	}
+
 	return total;
-}
-
-unsigned int s::rank(char c, unsigned int index) {
-
 }
 
 
 //return true if file was found 
 bool s::find_or_create_file(string filename){
 
-	ifstream FILE;
+	fstream FILE;
 	FILE.open(filename);
 
 	if(FILE){
 		cout << filename << " found" << "\n";
+		FILE.close();
 		return true;
 	} else {
-		ofstream FILE { filename };
+		fstream FILE(filename, fstream::out | fstream::in | fstream::trunc);
 		FILE.close();
 		cout << "file created: " << filename << "\n";
 		return false;	
 	}
 }
 
-void s::create_rank_file(string s_file_name, string rank_file_name){
+void s::fill_rank_file(fstream& s_file, string rank_file_name){
 
+	rank_file.open(rank_file_name, fstream::out | fstream::in | fstream::app);
+	
+	vector<unsigned long int> cur_rank(ALPHABET_SIZE, 0);
+	s_file.seekg(0, s_file.beg);
+	char cur_char;
+	unsigned long int cur_idx;
+	while(s_file.get(cur_char)){
+		cur_rank[cur_char]++;
+		if(cur_idx%RANK_SAVE_INTERVAL == 0){
+			VectorToFile(cur_rank, rank_file);
+		}
+		cur_idx++;
+	}
+	rank_file.close();
 }
 
-void s::create_count_file(string s_file_name, string count_file_name){
-	unsigned int count[ALPHABET_SIZE] = { 0 };
-	ifstream IN_FILE;
-	IN_FILE.open(s_file_name, ios::in);
-	count_file.open(count_file_name, ios::out);
+void s::fill_count_file(fstream& s_file, string count_file_name){
+
+	count_file.open(count_file_name, fstream::out | fstream::in);
 
 	char in_char;
+	vector<unsigned long int> count_vector(ALPHABET_SIZE, 0);
 
-	while(IN_FILE.get(in_char)){
-		count[in_char]++;
-		cout << in_char << endl;
+	s_file.seekg(0, s_file.beg);
+	while(s_file.get(in_char)){
+		count_vector[in_char]++;
 	}
-	IN_FILE.close();
 
 	unsigned int cum_tot = 0; //cumulative total
 	unsigned int temp;
 	for(int i = 0; i < ALPHABET_SIZE; i ++) {
-		if(count[i] > 0 ){
-			temp = count[i];
-			count[i] = cum_tot;
+		if(count_vector[i] > 0 ){
+			temp = count_vector[i];
+			count_vector[i] = cum_tot;
 			cum_tot += temp;
 		} else {
-			count[i] = cum_tot;
+			count_vector[i] = cum_tot;
 		}
-		count_file << count[i] << ",";
 	}
+
+	VectorToFile(count_vector, count_file);
+	count_file.close();
 }

@@ -41,16 +41,19 @@ unsigned long int s::rank(char c, unsigned int index) {
 	vector<unsigned long int> index_vec;
 	index_vec = FileToVector(rank_file, index_offset*ALPHABET_SIZE*sizeof(unsigned long int));
 	unsigned long int total = index_vec[c];
-
+ 
 	unsigned long int cur_read = index - index%RANK_SAVE_INTERVAL + 1; 
 	char in_char;
-	s_file.seekg(cur_read, s_file.beg);
+	s_file.clear();
+	s_file.seekg(cur_read);
 
 	while(cur_read <= index){
 
 		s_file.get(in_char);
-		if(in_char == c)
+
+		if(in_char == c){
 			total++;
+		}
 		cur_read++;
 	}
 
@@ -65,13 +68,13 @@ bool s::find_or_create_file(string filename){
 	FILE.open(filename);
 
 	if(FILE){
-		cout << filename << " found" << "\n";
+		cout << "Found file: " << filename << "\n";
 		FILE.close();
 		return true;
 	} else {
 		fstream FILE(filename, fstream::out | fstream::in | fstream::trunc);
 		FILE.close();
-		cout << "file created: " << filename << "\n";
+		cout << "File created: " << filename << "\n";
 		return false;	
 	}
 }
@@ -81,7 +84,8 @@ void s::fill_rank_file(fstream& s_file, string rank_file_name){
 	rank_file.open(rank_file_name, fstream::out | fstream::in | fstream::app);
 	
 	vector<unsigned long int> cur_rank(ALPHABET_SIZE, 0);
-	s_file.seekg(0, s_file.beg);
+	s_file.clear();
+	s_file.seekg(0);
 	char cur_char;
 	unsigned long int cur_idx;
 	while(s_file.get(cur_char)){
@@ -101,7 +105,8 @@ void s::fill_count_file(fstream& s_file, string count_file_name){
 	char in_char;
 	vector<unsigned long int> count_vector(ALPHABET_SIZE, 0);
 
-	s_file.seekg(0, s_file.beg);
+	s_file.clear();
+	s_file.seekg(0);
 	while(s_file.get(in_char)){
 		count_vector[in_char]++;
 	}

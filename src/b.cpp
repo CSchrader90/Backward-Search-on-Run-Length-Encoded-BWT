@@ -47,7 +47,55 @@ unsigned long int b::rank(unsigned long int index){
 }
 
 unsigned long int b::select(unsigned long int index){
+
 	//perform a binary search on b_rank_file
+	b_rank_file.clear();
+	b_rank_file.seekg(0, b_rank_file.end);
+	unsigned int num_entries = b_rank_file.tellg()/sizeof(unsigned long int) - 1;
+
+	return bin_select(0, num_entries, index);
+}
+
+//Helper function using a binary search over the rank index
+unsigned long int b::bin_select(unsigned long int l, unsigned long int r, unsigned long int index){
+
+	char in_byte;
+
+	if(r == l + 1){
+
+		unsigned long int rem;
+		unsigned long int tot_read = l*B_RANK_SAVE_INTERVAL*BYTE_SIZE; //total bits checked
+		unsigned long int tot_set; // total set bits
+		b_rank_file.seekg(l*sizeof(unsigned long int));
+		b_rank_file.get(in_byte);
+		tot_set = (unsigned long int)in_byte;
+
+		b_file.clear();
+		b_file.seekg(l*B_RANK_SAVE_INTERVAL, b_file.beg);
+
+		int byte_idx;
+		while(tot_set < index){
+			b_file.get(in_byte);
+			byte_idx = 0;
+			while(tot_set < index && byte_idx <= BYTE_SIZE){
+				byte_idx++;
+				tot_read++;
+				tot_set += ((unsigned char)in_byte >> (BYTE_SIZE - byte_idx) & 1);
+			}
+		}
+		return tot_read - 1;
+	} 
+
+	unsigned int m = (r - l)/2;
+	b_rank_file.seekg(m*sizeof(unsigned long int));
+	b_rank_file.get(in_byte);
+
+	if((unsigned long int)in_byte > index){
+		r = m;
+	} else {
+		l = m;
+	}
+	return bin_select(l, r, index);
 }
 
 void b::fill_b_rank_file(fstream& b_file, string b_rank_file_name){
@@ -65,6 +113,7 @@ void b::fill_b_rank_file(fstream& b_file, string b_rank_file_name){
 		if(cur_idx%B_RANK_SAVE_INTERVAL == 0){
 			b_rank_file.write(reinterpret_cast<const char *>(&cur_tot), sizeof(unsigned long int));
 		}
+		cur_idx++;
 	}
 	b_rank_file.close();
 }

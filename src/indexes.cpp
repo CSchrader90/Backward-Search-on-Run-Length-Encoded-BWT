@@ -1,7 +1,7 @@
 #include <vector>
 #include <fstream>
 #include "indexes.h"
-
+#include "constants.h"
 
 void indexes::VectorToFile(vector<unsigned long int> index_entry, fstream& out_file){
 
@@ -23,4 +23,22 @@ vector<unsigned long int> indexes::FileToVector(fstream& in_file, unsigned long 
     }
 
     return datavec;
+}
+
+//return true if file was found 
+bool indexes::find_or_create_file(string filename){
+
+    fstream FILE;
+    FILE.open(filename);
+
+    if(FILE){
+        cout << "Found file: " << filename << "\n";
+        FILE.close();
+        return true;
+    } else {
+        fstream FILE(filename, fstream::out | fstream::in | fstream::trunc);
+        FILE.close();
+        cout << "File created: " << filename << "\n";
+        return false;   
+    }
 }

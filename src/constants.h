@@ -1,3 +1,6 @@
+#ifndef CONSTANTS
+#define CONSTANTS
+
 #define INDEX_DIR "./../indexes/"
 #define FILE_DIR "./../files/"
 
@@ -8,3 +11,5 @@
 
 #define B_RANK_SAVE_INTERVAL 1
 #define B_SELECT_SAVE_INTERVAL 1
+
+#endif

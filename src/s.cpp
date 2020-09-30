@@ -60,6 +60,17 @@ unsigned long int s::rank(char c, unsigned int index) {
 	return total;
 }
 
+bool s::char_at_idx(char check_char, unsigned long int idx){
+	char found_char;
+	s_file.clear();
+	s_file.seekg(idx, s_file.beg);
+	s_file.get(found_char);
+
+	if(found_char == check_char)
+		return true;
+	else 
+		return false;
+}
 
 void s::fill_s_rank_file(fstream& s_file, string s_rank_file_name){
 

@@ -5,9 +5,9 @@
 
 using namespace std;
 class s : public indexes {
-	fstream s_file;
 	fstream s_count_file;
 	fstream s_rank_file;
+	fstream s_file;
 
 	vector<unsigned long int>count_vector;
 
@@ -19,4 +19,5 @@ class s : public indexes {
 		~s();
 		unsigned long int count(char c);
 		unsigned long int rank(char c, unsigned int index);
+		bool char_at_idx(char check_char, unsigned long int idx);
 };

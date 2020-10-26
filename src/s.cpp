@@ -61,6 +61,7 @@ unsigned long int s::rank(char c, unsigned int index) {
 }
 
 bool s::char_at_idx(char check_char, unsigned long int idx){
+
 	char found_char;
 	s_file.clear();
 	s_file.seekg(idx, s_file.beg);
